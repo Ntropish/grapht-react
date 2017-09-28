@@ -1,0 +1,42 @@
+body, html, .App, #root {
+  height: 100%;
+}
+
+.App {
+
+  display: flex;
+}
+
+nav {
+  flex: 0 0 15em;
+}
+
+.workspace {
+  flex: 1 1 1em;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu {
+  flex: 0 0 3em;
+  background: hsla(0, 10%, 50%, 0.8);  
+}
+
+.io {
+  flex: 1 1 1em;
+  display: flex;
+  background: hsla(0, 10%, 50%, 0.2);
+}
+
+.topBar>.toolbar {
+  flex: 1 1 1em;
+}
+
+.topBar>.toolbar>div {
+  flex: 1 1 1em;
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
