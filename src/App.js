@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import './App.css';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
 import GraphiQL from 'graphiql'
 import 'graphiql/graphiql.css'
 import injectTapEventPlugin from 'react-tap-event-plugin';
@@ -18,6 +21,10 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import {List, ListItem} from 'material-ui/List';
 
 import fetch from 'isomorphic-fetch';
+
+import Paper from 'material-ui/Paper';
+
+import './grapht.css'
  
 // Needed for onTouchTap
 // http://stackoverflow.com/a/34015469/988941
@@ -73,12 +80,25 @@ class App extends Component {
     }
   }
   count = 1 
-  setQuery(i) {
+  setQueryInEditor(i) {
     let query = this.state.queries[i]
     this.graphiql.getQueryEditor().setValue(query.value)
     
     this.setState(prevState=>{
       return Object.assign({}, prevState, {selectedQuery: i})
+    })
+  }
+  updateQuery(data) {
+    console.log(data)
+    this.setState((prevState) => {
+      var updatedQuery = this.selectedQuery()
+      updatedQuery.value = data
+
+      var newState = Object.assign({}, prevState)
+
+      newState.queries[prevState.selectedQuery] = updatedQuery
+
+      return newState
     })
   }
   addQuery() {
@@ -155,34 +175,37 @@ class App extends Component {
     );
 
     return (
-      <MuiThemeProvider>
+      <MuiThemeProvider  muiTheme={getMuiTheme(darkBaseTheme)}>
         <div className="App">
-          <nav>
-            <FlatButton
-              backgroundColor="#a4c639"
-              hoverColor="#8AA62F"
-              style={{margin: 12}}
-              onClick={()=>this.addQuery()}
-            > New Query</FlatButton>
-            <List>
-              {this.state.queries.map((q, i)=>{
-                return <ListItem 
-                primaryText={q.name} 
-                key={i}
-                onClick={()=>this.setQuery(i)}
-                rightIconButton={
-                    <IconMenu iconButtonElement={iconButtonElement}>
-                      <MenuItem onClick={this.removeQuery.bind(this, i)}>Delete</MenuItem>
-                    </IconMenu>
-                  }>
-                </ListItem>
-                })
-              }
-            </List>
-          </nav>
+          <Paper zDepth={3}>
+            <nav>
+              <FlatButton
+                hoverColor="#8AA62F"
+                style={{margin: 12}}
+                onClick={()=>this.addQuery()}
+              > New Query</FlatButton>
+              <List>
+                {this.state.queries.map((q, i)=>{
+                  return <ListItem 
+                  primaryText={q.name} 
+                  key={i}
+                  onClick={()=>this.setQueryInEditor(i)}
+                  rightIconButton={
+                      <IconMenu iconButtonElement={iconButtonElement}>
+                        <MenuItem onClick={this.removeQuery.bind(this, i)}>Delete</MenuItem>
+                      </IconMenu>
+                    }>
+                  </ListItem>
+                  })
+                }
+              </List>
+            </nav>
+          </Paper>
           <div className="workspace">
             <div className="io">
               <GraphiQL 
+              onEditQuery={this.updateQuery.bind(this)}
+              editorTheme="grapht"
               ref={c=> this.graphiql = c}
               fetcher={this.state.fetcher}
               query={this.selectedQuery().value}>
@@ -191,6 +214,7 @@ class App extends Component {
                 </GraphiQL.Logo>
                 <GraphiQL.Toolbar>
                   <TextField
+                  style={{color: 'white'}}
                   id='uriInput'
                   label='uri'
                   value={this.state.temporaryUri}
