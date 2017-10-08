@@ -66,6 +66,7 @@ class App extends Component {
     const prevQuery = prevState.queries[prevState.selectedQuery]
 
     // fetcher will need to update if the uri changed
+    // TODO: just branch graphiql so this isn't needed
     if (selectedQuery.uri !== prevQuery.uri) {
       this.setState(prevState=>{
         return Object.assign({}, prevState, {
